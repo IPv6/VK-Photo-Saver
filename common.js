@@ -308,8 +308,9 @@ function api(method, params, callback) {
     if (this.readyState == 4 && this.status == 200) {
       var res = (typeof this.response == 'string') ? JSON.parse(this.response) : this.response;
       if (!callback(res) && res.error) {
+        var notification = null;
         if ((res.error.error_code == 10) || (res.error.error_code == 13) || (res.error.error_code == 5)) {
-          var notification = new Notification(
+          notification = new Notification(
             'Расширению «VK Photo Saver» требуется авторизация', {
               icon: 'icon-48.png',
               body: 'Для загрузки изображений в ВКонтакте нужно разрешить доступ. Щелкните здесь чтобы авторизоваться.'
@@ -320,7 +321,7 @@ function api(method, params, callback) {
             notification.close();
           }
         } else {
-          var notification = new Notification(
+          notification = new Notification(
             'WPL: Ошибка ' + res.error.error_code + ' при выполнении запроса «' + method + '»', {
               icon: 'icon-48.png',
               body: 'Произошла ошибка «' + res.error.error_msg + ' при обращении к API ВКонтакте. Сообщите разработчику.'
