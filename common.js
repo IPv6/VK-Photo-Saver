@@ -320,20 +320,18 @@ function api(method, params, callback) {
             notification.close();
           }
         } else {
-          console.log("VK error:",res.error);
           var notification = new Notification(
-            'Ошибка ' + res.error.error_code + ' при выполнении запроса «' + method + '»', {
+            'WPL: Ошибка ' + res.error.error_code + ' при выполнении запроса «' + method + '»', {
               icon: 'icon-48.png',
               body: 'Произошла ошибка «' + res.error.error_msg + ' при обращении к API ВКонтакте. Сообщите разработчику.'
             }
           );
-
           notification.onclick = function () {
-            window.open('http://vk.com/write189814');
+            // window.open('http://vk.com/write189814');
             notification.close();
           }
         }
-
+        console.log("VK error:", res.error);
         notification.show();
         setTimeout(function() {
           notification.cancel();
