@@ -320,6 +320,7 @@ function api(method, params, callback) {
             notification.close();
           }
         } else {
+          console.log("VK error:",res.error);
           var notification = new Notification(
             'Ошибка ' + res.error.error_code + ' при выполнении запроса «' + method + '»', {
               icon: 'icon-48.png',
