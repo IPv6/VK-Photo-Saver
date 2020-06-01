@@ -1,3 +1,4 @@
+console.log("common.js ver: 1");
 function ge(e) {return document.getElementById(e)};
 function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
 function pad(s, len, ch, r) { return (r ? s : '') + (new Array(Math.max(0, len - (s + '').length + 1))).join(ch ? ch : '0') + (r ? '' : s); }
@@ -332,7 +333,7 @@ function api(method, params, callback) {
             notification.close();
           }
         }
-        console.log("VK error:", res.error);
+        console.log("VK error:", res.error, arr);
         notification.show();
         setTimeout(function() {
           notification.cancel();
