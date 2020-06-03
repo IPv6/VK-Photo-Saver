@@ -46,6 +46,7 @@ loadOptions({
   firstName: false,
   lastName: false,
   userID: false,
+  auth_user_id: false,
 
   showAlbum: true,
   showTabs: true,
