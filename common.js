@@ -1,4 +1,3 @@
-console.log("common.js ver: 1");
 function ge(e) {return document.getElementById(e)};
 function isArray(obj) { return Object.prototype.toString.call(obj) === '[object Array]'; }
 function pad(s, len, ch, r) { return (r ? s : '') + (new Array(Math.max(0, len - (s + '').length + 1))).join(ch ? ch : '0') + (r ? '' : s); }
@@ -52,7 +51,7 @@ loadOptions({
   showTabs: true,
   showMessage: true,
   showPost: true,
-  showFullPost: true,
+  savePostRefr: true,
 
   albums: [],
   afterUpload: false,
@@ -210,7 +209,9 @@ function upload(group, album, blob, url, src) {
       params.server = res.server;
       params.photos_list = res.photos_list;
       params.hash = res.hash;
-
+      if(opts.savePostRefr){
+        params.caption = "Source: "+src;
+      }
       api('photos.save', params, function(data) {
         console.log('saved', data);
 
@@ -299,7 +300,8 @@ function canvasToBlob(canvas) {
 }
 
 function api(method, params, callback) {
-  var arr = ['v=5.7', 'access_token=' + opts.accessToken];
+  var v = '5.107';
+  var arr = ['v='+v, 'access_token=' + opts.accessToken, 'user_id=' + opts.auth_user_id];
   for (var k in params) {
     arr.push(k + '=' + escape(params[k]));
   }
@@ -333,7 +335,7 @@ function api(method, params, callback) {
             notification.close();
           }
         }
-        console.log("VK error:", res.error, arr);
+        console.log("VK error:", res.error);
         notification.show();
         setTimeout(function() {
           notification.cancel();
@@ -341,6 +343,7 @@ function api(method, params, callback) {
       }
     }
   }
+  console.log("Api request", 'https://api.vk.com/method/' + method, arr.join('&'));
   xhr.open('POST', 'https://api.vk.com/method/' + method);
   xhr.responseType = 'json';
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
