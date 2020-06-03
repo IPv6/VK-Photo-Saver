@@ -233,20 +233,21 @@ function rebuildMenu(tabs) {
       }
     });
   }
-  if (opts.savePostRefr) {// WAS: tumblr
-    menu.push({
-      props: {
-        title: 'Добавлять в описание картинки сайт-источник',
-        onclick: function(info, tab) {
-          chrome.tabs.sendMessage(tab.id, { action: 'findSources' }, function(response) {
-            attach(response.sources, true);
-          });
-        },
-        //documentUrlPatterns: ['*://*.tumblr.com/*'],
-        contexts: ['image']
-      }
-    });
-  }
+  // TBD: Latest used albums
+  // if (opts.savePostRefr) {// WAS: tumblr
+  //   menu.push({
+  //     props: {
+  //       title: 'Добавлять в описание картинки сайт-источник',
+  //       onclick: function(info, tab) {
+  //         chrome.tabs.sendMessage(tab.id, { action: 'findSources' }, function(response) {
+  //           attach(response.sources, true);
+  //         });
+  //       },
+  //       //documentUrlPatterns: ['*://*.tumblr.com/*'],
+  //       contexts: ['image']
+  //     }
+  //   });
+  // }
 
   chrome.contextMenus.removeAll();
   refreshMenu(menu);
