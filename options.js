@@ -92,8 +92,15 @@ function checkAccessToken() {
   ge('block_settings').style.display = opts.accessToken ? 'block' : 'none';
 
   if (opts.accessToken) {
+    console.log("Requesting user data...");
+    api('users.get', {}, function(data) {
+      console.log("user data:", data);
+      saveOptions({ userID: data.response[0].id, firstName: data.response[0].first_name, lastName: data.response[0].last_name });
+      ge('link_user').href = 'http://vk.com/id' + opts.userID;
+      ge('link_user').innerHTML = opts.firstName + ' ' + opts.lastName;
+    });
+    console.log("Loading user groups...");
     loadGroups();
-
     var loading = {};
     for (var i = 0; i < opts.albums.length; i++) {
       var group_id = opts.albums[i].group ? opts.albums[i].group.id : 0;
@@ -102,13 +109,6 @@ function checkAccessToken() {
         loading[group_id] = true;
       }
     }
-
-    api('users.get', {}, function(data) {
-      saveOptions({ userID: data.response[0].id, firstName: data.response[0].first_name, lastName: data.response[0].last_name });
-
-      ge('link_user').href = 'http://vk.com/id' + opts.userID;
-      ge('link_user').innerHTML = opts.firstName + ' ' + opts.lastName;
-    });
   }
 }
 
@@ -178,10 +178,13 @@ function rebuildSelects() {
 function performAuth() {
   var redirect_uri = 'https://oauth.vk.com/blank.html';
   var redirect_regex = /^https:\/\/oauth.vk.com\/blank.html#(.*)$/i;
+  var app_id = '4139773';
+  var v = '5.107';
+  var popup_url = 'https://oauth.vk.com/authorize?client_id='+app_id+'&scope=photos,groups,offline&redirect_uri=' + redirect_uri + '&display=popup&v='+v+'&response_type=token';
   chrome.windows.getCurrent(function(wnd) {
     chrome.tabs.getCurrent(function(tab) {
       chrome.windows.create({
-        url: 'https://oauth.vk.com/authorize?client_id=4139773&scope=photos,groups,offline&redirect_uri=' + redirect_uri + '&display=popup&v=5.7&response_type=token',
+        url: popup_url,
         tabId: tab.id,
         focused: true,
         type: 'popup',
@@ -194,16 +197,20 @@ function performAuth() {
           var match;
           if (tab.windowId == popup.id && changeInfo.url && (match = changeInfo.url.match(redirect_regex))) {
             chrome.windows.remove(popup.id);
-
+            console.log("Auth popupUrl: ", changeInfo.url);
             var params = match[1].split('&');
             for (var i = 0; i < params.length; i++) {
               var kv = params[i].split('=');
+              if (kv[0] == 'user_id') {
+                saveOptions({ auth_user_id: kv[1] });
+                console.log('auth_user_id: ', kv[1]);
+              }
               if (kv[0] == 'access_token') {
                 saveOptions({ accessToken: kv[1] });
                 console.log('access_token: ', kv[1]);
-                checkAccessToken();
               }
             }
+            checkAccessToken();
           }
         });
       });
@@ -254,7 +261,7 @@ check('album', 'showAlbum');
 check('tabs', 'showTabs');
 check('message', 'showMessage');
 check('post', 'showPost');
-check('full_post', 'showFullPost');
+check('save_post_ref', 'savePostRefr');
 
 radiobtn('radio_copy', function(e, id) {
   saveOptions({ afterUpload: ({ radio_copy_none: false, radio_copy_src: 'src', radio_copy_page: 'page' })[id] });
