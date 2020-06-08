@@ -74,7 +74,7 @@ chrome.runtime.sendMessage({ message: 'getCaptureParams' }, function(data) {
             (function(i, j) {
               var subitem = ge('upload' + i + '_subitem' + j);
               subitem.onclick = function(e) {
-                send('captureAlbum', { group: opts.albums[i].group, album: opts.albums[i].album[j] });
+                send('captureAlbum', { group: opts.albums[i].group, album: opts.albums[i].album[j], referer: injectedPageRefUrl });
               }
             })(i, j);
           }
@@ -88,7 +88,7 @@ chrome.runtime.sendMessage({ message: 'getCaptureParams' }, function(data) {
       } else {
         (function(i) {
           upload.onclick = function(e) {
-            send('captureAlbum', { group: opts.albums[i].group, album: opts.albums[i].album });
+            send('captureAlbum', { group: opts.albums[i].group, album: opts.albums[i].album, referer: injectedPageRefUrl });
           }
         })(i);
       }
@@ -131,7 +131,11 @@ chrome.runtime.sendMessage({ message: 'getCaptureParams' }, function(data) {
   }
 });
 
+var injectedPageRefUrl = null;
 window.addEventListener('message', function(e) {
+  if (e.data.message == 'updateRefOrigin') {
+    injectedPageRefUrl = e.data.value;
+  }
   if (e.data.message == 'updateCaptureBounds') {
     if (act == 'crop') {
       updateCrop(e.data.x, e.data.y, e.data.w, e.data.h);
