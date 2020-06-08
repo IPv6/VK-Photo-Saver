@@ -177,6 +177,9 @@ function updateLastHovered() {
   }
 }
 
-window.addEventListener("message", messageEvent, false);
+root.onload = () => { 
+  root.contentWindow.postMessage({ message:'updateRefOrigin', value: window.location.href }, "*"); 
+}
 
+window.addEventListener("message", messageEvent, false);
 })();
