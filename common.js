@@ -176,7 +176,7 @@ function download(url, callback) {
 }
 
 var uploadNum = 0;
-function upload(group, album, blob, url, src) {
+function upload(group, album, blob, url, src, refsrc) {
   chrome.notifications.create('upload' + (++uploadNum), {
     type: 'progress',
     iconUrl: 'icon-48.png',
@@ -211,7 +211,17 @@ function upload(group, album, blob, url, src) {
       params.photos_list = res.photos_list;
       params.hash = res.hash;
       if(opts.savePostRefr){
-        params.caption = "Source: "+src;
+        var referer = refsrc;
+        if(!referer){
+          referer = src;
+        }
+        if(!referer){
+          referer = "???";
+        }
+        if(referer.length > 1000){
+          referer = referer.substr(0,900)+"...";
+        }
+        params.caption = "Source: "+referer;
       }
       api('photos.save', params, function(data) {
         console.log('saved', data);
